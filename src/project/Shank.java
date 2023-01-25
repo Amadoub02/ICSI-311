@@ -10,9 +10,6 @@ import java.util.List;
 public class Shank {
     public static void main(String[] args) {
         Path path = Paths.get("shank.txt");
-        //List<String> shankLines = Files.readAllLines(path, StandardCharsets.UTF_8);
-       // List<Token> tokenList = new ArrayList<>();
-
 
         if (args.length == 0) {
             System.out.println("No argument was detected ");
@@ -23,6 +20,10 @@ public class Shank {
             try {
                 List<String> fileLines = Files.readAllLines(path, StandardCharsets.UTF_8);
                 List<Token> tokenList = new ArrayList<>();
+                var lexer = new Lexer();
+                for (String line: fileLines) {
+                    //tokenList.addAll(lexer.lex(line));
+                }
 
             } catch (Exception e) {
                 throw new RuntimeException(e);
