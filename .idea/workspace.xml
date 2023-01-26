@@ -5,12 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a5014595-4324-4adc-940a-12c40c7bb3fd" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/shank.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/project/Lexer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/project/Lexer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/project/Shank.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/project/Shank.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/project/Token.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/project/Token.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/project/shank.txt" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -71,11 +66,37 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1674588251596</updated>
-      <workItem from="1674688703711" duration="5640000" />
+      <workItem from="1674688703711" duration="7219000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/project/Lexer.java</url>
+          <line>14</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/project/Lexer.java</url>
+          <line>12</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/project/Lexer.java</url>
+          <line>17</line>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+    <watches-manager>
+      <configuration name="Application">
+        <watch expression="tempString" />
+      </configuration>
+    </watches-manager>
   </component>
 </project>

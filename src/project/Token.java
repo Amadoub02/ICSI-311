@@ -19,7 +19,7 @@ public class Token {
         return stringValue;
     }
     public String toString(){
-        return stringValue + " " + tokenValue;
+        return "(" + stringValue + ")" + " " + tokenValue;
     }
 
 
