@@ -1,5 +1,6 @@
 package project;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -9,25 +10,29 @@ import java.util.List;
 
 public class Shank {
     public static void main(String[] args) {
-        Path path = Paths.get("shank.txt");
-
-        if (args.length == 0) {
-            System.out.println("No argument was detected ");
+        if (args.length != 1) {
+            System.out.println("Check there is only one argument passed ");
+            return;
         }
-        if (args.length < 1) {
-            System.out.println("More than one argument was detected ");
-        } else {
-            try {
-                List<String> fileLines = Files.readAllLines(path, StandardCharsets.UTF_8);
-                List<Token> tokenList = new ArrayList<>();
-                var lexer = new Lexer();
-                for (String line: fileLines) {
-                    //tokenList.addAll(lexer.lex(line));
-                }
-
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+        Path path = Paths.get(args[0]);
+        //Path path = Paths.get("shank.txt");
+        try {
+            List<String> fileLines = Files.readAllLines(path, StandardCharsets.UTF_8);
+            List<Token> tokenList = new ArrayList<>();
+            var lexerTokens = new Lexer();
+            for (String line : fileLines) {
+                tokenList.addAll(lexerTokens.lex(line));
+                System.out.println(line);
             }
+            String printTokens = "";
+            for(var token: tokenList) {
+                printTokens += token.toString();
+            }
+            System.out.println(printTokens);
+        } catch (IOException e) {
+            System.out.println("An error occurred while trying to read the file: " + e.getMessage());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 }

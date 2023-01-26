@@ -1,7 +1,7 @@
 package project;
 
 public class Token {
-    enum Tokens {
+    public enum Tokens {
         NUMBER, WORD, EndOfLine
     }
 
