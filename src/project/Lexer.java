@@ -10,50 +10,56 @@ public class Lexer {
         StringBuilder tempString = new StringBuilder();
 
         int state = 1;
+        char currentChar;
+
         for (int i = 0; i < input.length(); i++) {
 
-            char currentChar = 0;
             currentChar = input.charAt(i);
 
             switch (state) {
                 case 1:
                     if (Character.isLetter(currentChar)) {
+                        tempString.append(currentChar);
                         state = 2;
                     } else if (Character.isDigit(currentChar)) {
+                        tempString.append(currentChar);
                         state = 4;
                     } else if ( currentChar == '.') {
+                        tempString.append(currentChar);
                         state = 3;
-                    }
+                    }/**else {
+                        throw new Exception("Failed in state 1");
+                    }**/
                     break;
                 case  2:
                     if (Character.isLetter(currentChar) || Character.isDigit(currentChar)) {
                         tempString.append(currentChar);
-                        tokens.add(new Token(Token.Tokens.WORD, tempString.toString()));
-                        //tempString.setLength(0);
-                        tempString.append(currentChar);
+                        state = 2;
                     } else {
+                        tokens.add(new Token(Token.Tokens.WORD,tempString.toString()));
                         state = 1;
-                }
+                    }
+
                     break;
                 case 3:
-                    if (Character.isDigit(currentChar)) {
+                    if (currentChar == '.') {
                         tempString.append(currentChar);
-                        state = 1;
-                    }else {
+                        state = 3;
+                    }else if (Character.isDigit(currentChar)){
+                        state = 3;
                         tempString.append(currentChar);
-                        tokens.add(new Token(Token.Tokens.NUMBER, tempString.toString()));
-
                     }
+                    break;
                 case 4:
                     if (Character.isDigit(currentChar)) {
                         tempString.append(currentChar);
-                        state = 1;
+                        tokens.add(new Token(Token.Tokens.NUMBER, tempString.toString()));
+                        state = 4;
                     } else if (currentChar == '.') {
                         tempString.append(currentChar);
                         state = 3;
-                    }else {
-                        state = 1;
                     }
+                    break;
             }
         }
         return tokens;
