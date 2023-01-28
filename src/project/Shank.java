@@ -11,7 +11,7 @@ import java.util.List;
 public class Shank {
     public static void main(String[] args) {
         if (args.length != 1) {
-            System.out.println("Check there is only one argument passed ");
+            System.out.println("Error there should be only one argument ");
             return;
         }
         Path path = Paths.get(args[0]);

@@ -21,46 +21,67 @@ public class Lexer {
                     if (Character.isLetter(currentChar)) {
                         tempString.append(currentChar);
                         state = 2;
-                    } else if (Character.isDigit(currentChar)) {
+                    }else if (Character.isDigit(currentChar)) {
                         tempString.append(currentChar);
                         state = 4;
-                    } else if ( currentChar == '.') {
+                    }else if ( currentChar == '.') {
                         tempString.append(currentChar);
                         state = 3;
-                    }/**else {
+                    }else if(currentChar == ' '){
+                        state = 1;
+                    }else {
                         throw new Exception("Failed in state 1");
-                    }**/
+                    }
                     break;
                 case  2:
                     if (Character.isLetter(currentChar) || Character.isDigit(currentChar)) {
                         tempString.append(currentChar);
+                        tokens.add(new Token(Token.TokenType.WORD, tempString.toString()));
                         state = 2;
-                    } else {
-                        tokens.add(new Token(Token.Tokens.WORD,tempString.toString()));
+                    }else if (currentChar == ' ') {
+                        tempString.append(currentChar);
                         state = 1;
+                    }else if(!Character.isLetter(currentChar) || !Character.isDigit(currentChar)){
+                        tokens.add(new Token(Token.TokenType.WORD, tempString.toString()));
+                        tempString.setLength(0);
+                        state = 1;
+                    }else {
+                        throw new Exception("Failed in state 2");
                     }
-
                     break;
                 case 3:
-                    if (currentChar == '.') {
-                        tempString.append(currentChar);
-                        state = 3;
-                    }else if (Character.isDigit(currentChar)){
-                        state = 3;
-                        tempString.append(currentChar);
+                     if (Character.isDigit(currentChar)){
+                         tempString.append(currentChar);
+                         tokens.add(new Token(Token.TokenType.NUMBER, tempString.toString()));
+                         state = 3;
+                    }else if(!Character.isDigit(currentChar)) {
+                         tokens.add(new Token(Token.TokenType.NUMBER, tempString.toString()));
+                         state = 1;
+                     }else {
+                        throw new Exception("Failed in state 3");
                     }
                     break;
                 case 4:
                     if (Character.isDigit(currentChar)) {
                         tempString.append(currentChar);
-                        tokens.add(new Token(Token.Tokens.NUMBER, tempString.toString()));
+                        tokens.add(new Token(Token.TokenType.NUMBER, tempString.toString()));
                         state = 4;
                     } else if (currentChar == '.') {
                         tempString.append(currentChar);
                         state = 3;
+                    }else if (currentChar == ' ') {
+                        tempString.append(currentChar);
+                        state = 1;
+                    }else if(!Character.isDigit(currentChar)){
+                        state = 1;
+                    }else {
+                        throw new Exception("Failed in state 4");
                     }
                     break;
             }
+        }
+        if(tempString.length() > 0){
+            tokens.add(new Token(Token.TokenType.EndOfLine, ""));
         }
         return tokens;
     }

@@ -1,18 +1,18 @@
 package project;
 
 public class Token {
-    public enum Tokens {
+    public enum TokenType {
         NUMBER, WORD, EndOfLine
     }
 
-    private Tokens tokenValue;
+    private TokenType tokenValue;
     private String stringValue;
 
-    public Token(Tokens tokenValue, String stringValue) {
+    public Token(TokenType tokenValue, String stringValue) {
         this.tokenValue = tokenValue;
         this.stringValue = stringValue;
     }
-    public Tokens getTokenValue() {
+    public TokenType getTokenValue() {
         return tokenValue;
     }
     public String getStringValue() {
