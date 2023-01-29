@@ -10,7 +10,8 @@ public class Lexer {
         StringBuilder tempString = new StringBuilder();
 
         int state = 1;
-        char currentChar = 0;
+        char currentChar;
+        currentChar= 0;
 
         for (int i = 0; i < input.length(); i++) {
 
@@ -29,22 +30,21 @@ public class Lexer {
                         state = 3;
                     }else if(currentChar == ' '){
                         state = 1;
-                    }/**else {
-                        throw new Exception("Failed in state 1");
-                    }**/
+                    }else if(currentChar == '+' ||currentChar == '-' || currentChar == '*' || currentChar == '/'){
+                        state = 1;
+                    }else {
+                    throw new Exception("Failed in state 1");
+                    }
                     break;
                 case  2:
                     if (Character.isLetter(currentChar) || Character.isDigit(currentChar)) {
                         tempString.append(currentChar);
-                       // tokens.add(new Token(Token.TokenType.WORD, tempString.toString()));
-                        state = 2;
                     }else if (currentChar == ' ') {
                         tokens.add(new Token(Token.TokenType.WORD, tempString.toString()));
                         tempString.append(currentChar);
                         tempString.setLength(0);
                         state = 1;
                     }else if(!Character.isLetter(currentChar) || !Character.isDigit(currentChar)){
-                        //tokens.add(new Token(Token.TokenType.WORD, tempString.toString()));
                         tempString.setLength(0);
                         state = 1;
                     }else {
@@ -78,17 +78,19 @@ public class Lexer {
                         tempString.append(currentChar);
                         tempString.setLength(0);
                         state = 1;
-                    }else if(!Character.isDigit(currentChar)){
+                    }else if(!Character.isDigit(currentChar)) {
+                        tokens.add(new Token(Token.TokenType.NUMBER, tempString.toString()));
+                        tempString.setLength(0);
                         state = 1;
                     }else {
                         throw new Exception("Failed in state 4");
                     }
             }
         }
-        if(Character.isLetter(tempString.charAt(0))) {
+        if(Character.isLetter(currentChar)) {
             tokens.add(new Token(Token.TokenType.WORD, tempString.toString()));
         }
-        else {
+        else if (Character.isDigit(currentChar)) {
             tokens.add(new Token(Token.TokenType.NUMBER, tempString.toString()));
         }
         if(tempString.length() > 0){

@@ -26,7 +26,7 @@ public class Shank {
             }
             String printTokens = "";
             for(var token: tokenList) {
-                System.out.println(token.toString());
+                System.out.println(token.toString() + " ");
             }
             System.out.println(printTokens);
         } catch (IOException e) {
