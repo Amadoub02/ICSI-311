@@ -78,10 +78,6 @@ public class Lexer {
                         tempString.append(currentChar);
                         tempString.setLength(0);
                         state = 1;
-                    }else if(!Character.isDigit(currentChar)) {
-                        tokens.add(new Token(Token.TokenType.NUMBER, tempString.toString()));
-                        tempString.setLength(0);
-                        state = 1;
                     }else {
                         throw new Exception("Failed in state 4");
                     }
