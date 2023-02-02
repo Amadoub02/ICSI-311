@@ -5,8 +5,8 @@ import java.util.List;
 
 public class Lexer {
 
-    enum states{
-        NUMBER,WORD,DECIMAL
+    enum States{
+        BEGIN,NUMBER,WORD,DECIMAL
     }
 
 
@@ -14,7 +14,9 @@ public class Lexer {
         List<Token> tokens = new ArrayList<>();
         StringBuilder tempString = new StringBuilder();
 
-        int state = 1;
+        States state;
+        state = States.BEGIN;
+       // int state = 1;
         char currentChar;
         currentChar= 0;
 
@@ -23,71 +25,72 @@ public class Lexer {
             currentChar = input.charAt(i);
 
             switch (state) {
-                case 1:
+                case BEGIN:
                     if (Character.isLetter(currentChar)) {
                         tempString.append(currentChar);
-                        state = 2;
+                        state = States.WORD;
                     }else if (Character.isDigit(currentChar)) {
                         tempString.append(currentChar);
-                        state = 4;
+                        state = States.NUMBER;
                     }else if ( currentChar == '.') {
                         tempString.append(currentChar);
-                        state = 3;
+                        state = States.DECIMAL;
                     }else if(currentChar == ' '){
-                        state = 1;
+                        state = States.BEGIN;
                         tempString.setLength(0);
                     }else if(currentChar == '+' ||currentChar == '-' || currentChar == '*' || currentChar == '/'){
                         tempString.setLength(0);
-                        state = 1;
-                    }else if(!Character.isLetter(currentChar) || !Character.isDigit(currentChar)) {
-                        tempString.setLength(0);
-                        state =1;
+                        state = States.BEGIN;
                     }else {
                     throw new Exception("Failed in state 1");
                     }
                     break;
-                case  2:
+                case  WORD:
                     if (Character.isLetter(currentChar) || Character.isDigit(currentChar)) {
                         tempString.append(currentChar);
                     }else if (currentChar == ' ') {
                         tokens.add(new Token(Token.TokenType.WORD, tempString.toString()));
                         tempString.append(currentChar);
                         tempString.setLength(0);
-                        state = 1;
+                        state = States.BEGIN;
                     }else if(!Character.isLetter(currentChar) || !Character.isDigit(currentChar)){
                         tempString.setLength(0);
-                        state = 1;
+                        state = States.BEGIN;
                     }else {
                         throw new Exception("Failed in state 2");
                     }
                     break;
-                case 3:
+                case DECIMAL:
                      if (Character.isDigit(currentChar)){
                          tempString.append(currentChar);
-                         state = 3;
+                         state = States.DECIMAL;
                     }else if(!Character.isDigit(currentChar)) {
                          tokens.add(new Token(Token.TokenType.NUMBER, tempString.toString()));
                          tempString.setLength(0);
-                         state = 1;
+                         state = States.BEGIN;
                      }else if(currentChar == ' ') {
                          tokens.add(new Token(Token.TokenType.NUMBER, tempString.toString()));
                          tempString.setLength(0);
-                         state = 1;
+                         state = States.BEGIN;
                      }else {
                         throw new Exception("Failed in state 3");
                     }
                     break;
-                case 4:
+                case NUMBER:
                     if (Character.isDigit(currentChar)) {
                         tempString.append(currentChar);
-                    } else if (currentChar == '.') {
+                    }else if(!Character.isDigit(currentChar)) {
+                        tokens.add(new Token(Token.TokenType.NUMBER, tempString.toString()));
+                        tempString.setLength(0);
+                        state = States.BEGIN;
+                    }else if (currentChar == '.') {
                         tempString.append(currentChar);
-                        state = 3;
+                        state = States.DECIMAL;
                     }else if (currentChar == ' ') {
                         tokens.add(new Token(Token.TokenType.NUMBER, tempString.toString()));
                         tempString.append(currentChar);
                         tempString.setLength(0);
-                        state = 1;
+                        state = States.BEGIN;
                     }else {
                         throw new Exception("Failed in state 4");
                     }
