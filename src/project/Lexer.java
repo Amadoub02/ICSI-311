@@ -5,6 +5,11 @@ import java.util.List;
 
 public class Lexer {
 
+    enum states{
+        NUMBER,WORD,DECIMAL
+    }
+
+
     public List<Token> lex(String input) throws Exception {
         List<Token> tokens = new ArrayList<>();
         StringBuilder tempString = new StringBuilder();
@@ -30,8 +35,13 @@ public class Lexer {
                         state = 3;
                     }else if(currentChar == ' '){
                         state = 1;
+                        tempString.setLength(0);
                     }else if(currentChar == '+' ||currentChar == '-' || currentChar == '*' || currentChar == '/'){
+                        tempString.setLength(0);
                         state = 1;
+                    }else if(!Character.isLetter(currentChar) || !Character.isDigit(currentChar)) {
+                        tempString.setLength(0);
+                        state =1;
                     }else {
                     throw new Exception("Failed in state 1");
                     }
@@ -81,20 +91,19 @@ public class Lexer {
                     }else {
                         throw new Exception("Failed in state 4");
                     }
+                    break;
+            }
+
+        }
+        if(tempString.length() != 0) {
+            char firstChar = tempString.charAt(0);
+            if (Character.isLetter(firstChar)) {
+                tokens.add(new Token(Token.TokenType.WORD, tempString.toString()));
+            } else if (Character.isDigit(firstChar)) {
+                tokens.add(new Token(Token.TokenType.NUMBER, tempString.toString()));
             }
         }
-        if(Character.isLetter(currentChar)) {
-            tokens.add(new Token(Token.TokenType.WORD, tempString.toString()));
-        }
-        else if (Character.isDigit(currentChar)) {
-            tokens.add(new Token(Token.TokenType.NUMBER, tempString.toString()));
-        }
-        if(tempString.length() > 0){
             tokens.add(new Token(Token.TokenType.EndOfLine, ""));
-        }
-        if(input.isEmpty()){
-            tokens.add(new Token(Token.TokenType.EndOfLine, ""));
-        }
         return tokens;
     }
 }
