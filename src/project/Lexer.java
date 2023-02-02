@@ -5,6 +5,7 @@ import java.util.List;
 
 public class Lexer {
 
+    //Enums used to label states accordingly
     enum States{
         BEGIN,NUMBER,WORD,DECIMAL
     }
@@ -12,14 +13,16 @@ public class Lexer {
 
     public List<Token> lex(String input) throws Exception {
         List<Token> tokens = new ArrayList<>();
-        StringBuilder tempString = new StringBuilder();
+        StringBuilder tempString = new StringBuilder(); //adds chars to string buffer
 
         States state;
         state = States.BEGIN;
-       // int state = 1;
         char currentChar;
-        currentChar= 0;
+        //currentChar= 0;
 
+        //for loop that iterates over every character and assigns tokens based on conditions
+        //inside for look is a state machine that changes states
+        // based on the condition of current char and the result of the string "temp string"
         for (int i = 0; i < input.length(); i++) {
 
             currentChar = input.charAt(i);
@@ -79,13 +82,13 @@ public class Lexer {
                 case NUMBER:
                     if (Character.isDigit(currentChar)) {
                         tempString.append(currentChar);
+                    }else if (currentChar == '.') {
+                        tempString.append(currentChar);
+                        state = States.DECIMAL;
                     }else if(!Character.isDigit(currentChar)) {
                         tokens.add(new Token(Token.TokenType.NUMBER, tempString.toString()));
                         tempString.setLength(0);
                         state = States.BEGIN;
-                    }else if (currentChar == '.') {
-                        tempString.append(currentChar);
-                        state = States.DECIMAL;
                     }else if (currentChar == ' ') {
                         tokens.add(new Token(Token.TokenType.NUMBER, tempString.toString()));
                         tempString.append(currentChar);
@@ -98,14 +101,17 @@ public class Lexer {
             }
 
         }
+        //conditional to check if string is empty
+        //fixes issue I had with assign tokens incorrectly
         if(tempString.length() != 0) {
             char firstChar = tempString.charAt(0);
-            if (Character.isLetter(firstChar)) {
-                tokens.add(new Token(Token.TokenType.WORD, tempString.toString()));
-            } else if (Character.isDigit(firstChar)) {
-                tokens.add(new Token(Token.TokenType.NUMBER, tempString.toString()));
+            if (Character.isLetter(firstChar)) { //if string starts with a letter token assigned has to be a word / identifier
+                tokens.add(new Token(Token.TokenType.WORD, tempString.toString())); //add according "WORD" token
+            } else if (Character.isDigit(firstChar)) { //if string starts with a digit, assigned token has to be a number
+                tokens.add(new Token(Token.TokenType.NUMBER, tempString.toString()));//add according "NUMBER" token
             }
         }
+            //at the end of every input line, add an "EndOfLine" Token
             tokens.add(new Token(Token.TokenType.EndOfLine, ""));
         return tokens;
     }
