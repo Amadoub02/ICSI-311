@@ -21,14 +21,10 @@ public class Shank {
             List<Token> tokenList = new ArrayList<>();
             var lexerTokens = new Lexer();
             for (String line : fileLines) {
-                tokenList.addAll(lexerTokens.lex(line));
-                System.out.println(line);
+                List<Token>tokens = lexerTokens.lex(line);
+                tokenList.addAll(tokens);
+                System.out.println(tokens);
             }
-            String printTokens = "";
-            for(var token: tokenList) {
-                System.out.println(token.toString() + " ");
-            }
-            System.out.println(printTokens);
         } catch (IOException e) {
             System.out.println("An error occurred while trying to read the file: " + e.getMessage());
         } catch (Exception e) {
