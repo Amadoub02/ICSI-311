@@ -2,7 +2,9 @@ package project;
 
 public class Token {
     public enum TokenType {
-        NUMBER, WORD, EndOfLine
+        NUMBER, WORD, EndOfLine,
+        IDENTIFIER,STRINGLITERAL,CHARACTERLITERAL,
+        WHILE,FOR,IF,BEGIN,END
     }
 
     private TokenType tokenValue;

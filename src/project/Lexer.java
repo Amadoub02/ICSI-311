@@ -1,18 +1,30 @@
 package project;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class Lexer {
 
     //Enums used to label states accordingly
     enum States{
-        BEGIN,NUMBER,WORD,DECIMAL
+        BEGIN,NUMBER,WORD,DECIMAL,IDENTIFIER
     }
 
-
+    private HashMap<String, Token.TokenType > knownWords = new HashMap<>();
+    {
+        knownWords.put("while",Token.TokenType.WHILE);
+        knownWords.put("if", Token.TokenType.IF);
+        knownWords.put("for", Token.TokenType.FOR);
+        knownWords.put("begin", Token.TokenType.BEGIN);
+        knownWords.put("end", Token.TokenType.END);
+    }
     public List<Token> lex(String input) throws Exception {
         List<Token> tokens = new ArrayList<>();
+
+
+
+        boolean doWeHaveWhile = knownWords.containsKey("while");
         StringBuilder tempString = new StringBuilder(); //adds chars to string buffer
 
         States state;
@@ -31,7 +43,7 @@ public class Lexer {
                 case BEGIN:
                     if (Character.isLetter(currentChar)) {
                         tempString.append(currentChar);
-                        state = States.WORD;
+                        state = States.IDENTIFIER;
                     }else if (Character.isDigit(currentChar)) {
                         tempString.append(currentChar);
                         state = States.NUMBER;
@@ -48,11 +60,11 @@ public class Lexer {
                     throw new Exception("Failed in state 1");
                     }
                     break;
-                case  WORD:
+                case  IDENTIFIER:
                     if (Character.isLetter(currentChar) || Character.isDigit(currentChar)) {
                         tempString.append(currentChar);
                     }else if (currentChar == ' ') {
-                        tokens.add(new Token(Token.TokenType.WORD, tempString.toString()));
+                        tokens.add(new Token(Token.TokenType.IDENTIFIER, tempString.toString()));
                         tempString.append(currentChar);
                         tempString.setLength(0);
                         state = States.BEGIN;
@@ -105,8 +117,8 @@ public class Lexer {
         //fixes issue I had with assign tokens incorrectly
         if(tempString.length() != 0) {
             char firstChar = tempString.charAt(0);
-            if (Character.isLetter(firstChar)) { //if string starts with a letter token assigned has to be a word / identifier
-                tokens.add(new Token(Token.TokenType.WORD, tempString.toString())); //add according "WORD" token
+            if (Character.isLetter(firstChar)) { //if string starts with a letter token assigned has to be a IDENTIFIER / identifier
+                tokens.add(new Token(Token.TokenType.IDENTIFIER, tempString.toString())); //add according "IDENTIFIER" token
             } else if (Character.isDigit(firstChar)) { //if string starts with a digit, assigned token has to be a number
                 tokens.add(new Token(Token.TokenType.NUMBER, tempString.toString()));//add according "NUMBER" token
             }
