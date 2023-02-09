@@ -4,7 +4,10 @@ public class Token {
     public enum TokenType {
         NUMBER, WORD, EndOfLine,
         IDENTIFIER,STRINGLITERAL,CHARACTERLITERAL,
-        WHILE,FOR,IF,BEGIN,END
+        WHILE,FOR,IF,BEGIN,END,REPEAT,DEFINE,
+        INTEGER,CONSTANTS,FLOAT, REAL, VARIABLES,THEN,
+        SEMICOLON, COLON, EQUALS, COMMA,COMMENT,
+        LPAREN,RPAREN,WRITE
     }
 
     private TokenType tokenValue;
