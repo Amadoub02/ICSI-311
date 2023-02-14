@@ -6,9 +6,10 @@ import java.util.List;
 
 public class Lexer {
     private static boolean isCommenting = false;
+    private static int intlevel = 0;
     //Enums used to label states accordingly
     enum States{
-        BEGIN,NUMBER,WORD,DECIMAL,IDENTIFIER,STRINGLITERAL,CHARACTERLITERAL,COMMENTS,SPACE,PUNCTUATION
+        BEGIN,NUMBER,WORD,DECIMAL,IDENTIFIER,STRINGLITERAL,CHARACTERLITERAL,COMMENTS,SPACE,PUNCTUATION,OPERATION
     }
     public HashMap<String, Token.TokenType> knownWords = new HashMap<>(); //Hashmap to hold keywords
     {
@@ -26,9 +27,60 @@ public class Lexer {
         knownWords.put("constants", Token.TokenType.CONSTANTS);
         knownWords.put("float", Token.TokenType.FLOAT);
         knownWords.put("write", Token.TokenType.WRITE);
+        knownWords.put("mod", Token.TokenType.MODULUS);
+        knownWords.put("left", Token.TokenType.LEFT);
+        knownWords.put("right", Token.TokenType.RIGHT);
+        knownWords.put("from", Token.TokenType.FROM);
+        knownWords.put("array", Token.TokenType.ARRAY);
+        knownWords.put("var", Token.TokenType.VAR);
+        knownWords.put("substring", Token.TokenType.SUBSTRING);
+        knownWords.put("sqr", Token.TokenType.SQUAREROOT);
+        knownWords.put("intToreal", Token.TokenType.INTEGERTOREAL);
+        knownWords.put("realtointeger", Token.TokenType.REALTOINTEGER);
+        knownWords.put("readonly", Token.TokenType.READONLY);
+        knownWords.put("alsoreadonly", Token.TokenType.ALSOREADONLY);
+        knownWords.put("until", Token.TokenType.UNTIL);
+        knownWords.put("boolean", Token.TokenType.BOOLEAN);
+        knownWords.put("true", Token.TokenType.TRUE);
+        knownWords.put("false", Token.TokenType.FALSE);
+        knownWords.put("to", Token.TokenType.TO);
+        knownWords.put("character", Token.TokenType.CHARACTER);
+        knownWords.put("string", Token.TokenType.STRING);
+        knownWords.put("else", Token.TokenType.ELSE);
+        knownWords.put("elseif", Token.TokenType.ELSEIF);
+        knownWords.put("of", Token.TokenType.OF);
+
     }
+    private static final int INDENTATION_SIZE = 4;
+
+    private static int getIndentationLevel(String line) {
+        int level = 0;
+        for (int i = 0; i < line.length(); i++) {
+            char c = line.charAt(i);
+            if (c == ' ') {
+                level++;
+            } else if (c == '\t') {
+                level += INDENTATION_SIZE;
+            } else {
+                break;
+            }
+        }
+        return level / INDENTATION_SIZE;
+    }
+
+
     public List<Token> lex(String input) throws Exception {
         List<Token> tokens = new ArrayList<>();
+
+        String indentationLevel = String.valueOf(getIndentationLevel(input));
+
+        int currentLevel = getIndentationLevel(input);
+        if (currentLevel >= intlevel) {
+            tokens.add(new Token(Token.TokenType.INDENT, indentationLevel));
+        } else {
+            tokens.add(new Token(Token.TokenType.DEDENT, indentationLevel));
+        }
+        intlevel = currentLevel;
         StringBuilder tempString = new StringBuilder(); //adds chars to string buffer
 
         States state;
@@ -38,6 +90,7 @@ public class Lexer {
         if(isCommenting) {
             state = States.COMMENTS;
         }
+
 
         //for loop that iterates over every character and assigns tokens based on conditions
         //inside for loop is a state machine that changes states
@@ -60,9 +113,9 @@ public class Lexer {
                     }else if(currentChar == ' '){
                         state = States.BEGIN;
                         tempString.setLength(0);
-                    }else if(currentChar == '+' ||currentChar == '-' || currentChar == '*' || currentChar == '/'){
-                        tempString.setLength(0);
-                        state = States.BEGIN;
+                    }else if(currentChar == '+' ||currentChar == '-'){
+                        tempString.append(currentChar);
+                        state = States.NUMBER;
                     }else if(currentChar == '"'){
                         //tempString.append(currentChar);
                         state = States.STRINGLITERAL;
@@ -73,10 +126,42 @@ public class Lexer {
                         isCommenting = true;
                         //tempString.append(currentChar);
                         state = States.COMMENTS;
-                    }else if(currentChar == ';' || currentChar == ':' || currentChar == '='){
-                        state = States.PUNCTUATION;
+                    }else if (currentChar == ';'){
+                        tokens.add(new Token(Token.TokenType.SEMICOLON, ";"));
+                        state = States.BEGIN;
+                    }else if (currentChar == ':') {
+                        if (input.charAt(i + 1) == '=') {
+                        tokens.add(new Token(Token.TokenType.ASSIGNMENT, ":="));
+                            i++;
+                        }else {
+                            tokens.add(new Token(Token.TokenType.COLON, ":"));
+                        }
+                    }else if (currentChar == '='){
+                        tokens.add(new Token(Token.TokenType.EQUALS, "="));
+                        state = States.BEGIN;
+                    }else if (currentChar == ',') {
+                        tokens.add(new Token(Token.TokenType.COMMA, ","));
+                    }else if(currentChar == '('){
+                        tokens.add(new Token(Token.TokenType.LEFTPAREN, "("));
+                    }else if (currentChar == '<') {
+                        if (input.charAt(i + 1) == '=') {
+                            tokens.add(new Token(Token.TokenType.LESSTHANEQUAL, "<="));
+                            i++;
+                        }else if(input.charAt(i + 1) == '>'){
+                            tokens.add(new Token(Token.TokenType.NOTEQUAL, "<>"));
+                            i++;
+                        }else {
+                            tokens.add(new Token(Token.TokenType.LESSTHAN, "<"));
+                        }
+                    }else if (currentChar == '>') {
+                        if (input.charAt(i + 1) == '=') {
+                            tokens.add(new Token(Token.TokenType.GREATERTHANEQUAL, ">="));
+                            i++;
+                        }else {
+                            tokens.add(new Token(Token.TokenType.GREATERTHAN, ">"));
+                        }
                     }else{
-                    throw new Exception("Failed in begin state");
+                        throw new Exception("Failed in begin state or invalid character" + currentChar);
                     }
                     break;
                 case  IDENTIFIER:
@@ -97,14 +182,10 @@ public class Lexer {
                      if (Character.isDigit(currentChar)){
                          tempString.append(currentChar);
                          state = States.DECIMAL;
-                    }else if(!Character.isDigit(currentChar)) {
+                    }else if(currentChar == ' ') {
                          tokens.add(new Token(Token.TokenType.NUMBER, tempString.toString()));
                          tempString.setLength(0);
-                         state = States.BEGIN;
-                     }else if(currentChar == ' ') {
-                         tokens.add(new Token(Token.TokenType.NUMBER, tempString.toString()));
-                         tempString.setLength(0);
-                         state = States.BEGIN;
+                         state = States.SPACE;
                      }else {
                         throw new Exception("Failed in decimal state");
                     }
@@ -115,15 +196,64 @@ public class Lexer {
                     }else if (currentChar == '.') {
                         tempString.append(currentChar);
                         state = States.DECIMAL;
-                    }else if(!Character.isDigit(currentChar)) {
+                    }else if(currentChar == ')'){
                         tokens.add(new Token(Token.TokenType.NUMBER, tempString.toString()));
                         tempString.setLength(0);
+                        tokens.add(new Token(Token.TokenType.RIGHTPAREN,")"));
+                        tempString.setLength(0);
                         state = States.BEGIN;
+                    }else if(currentChar == '+'){
+                        tokens.add(new Token(Token.TokenType.NUMBER, tempString.toString()));
+                        tempString.setLength(0);
+                        tokens.add(new Token(Token.TokenType.PLUS,"+"));
+                        tempString.setLength(0);
+                        state = States.BEGIN;
+                    }else if(currentChar == '-'){
+                        tokens.add(new Token(Token.TokenType.NUMBER, tempString.toString()));
+                        tempString.setLength(0);
+                        tokens.add(new Token(Token.TokenType.MINUS, "-"));
+                        tempString.setLength(0);
+                        state = States.BEGIN;
+                    }else if(currentChar == '*'){
+                        tokens.add(new Token(Token.TokenType.NUMBER, tempString.toString()));
+                        tempString.setLength(0);
+                        tokens.add(new Token(Token.TokenType.MULTIPLY, "*"));
+                        state = States.BEGIN;
+                    }else if(currentChar == '/'){
+                        tokens.add(new Token(Token.TokenType.NUMBER, tempString.toString()));
+                        tempString.setLength(0);
+                        tokens.add(new Token(Token.TokenType.DIVIDES, "/"));
+                        state = States.BEGIN;
+                    }else if(currentChar == '='){
+                        tokens.add(new Token(Token.TokenType.NUMBER, tempString.toString()));
+                        tempString.setLength(0);
+                        tokens.add(new Token(Token.TokenType.EQUALS, "="));
+                        state = States.BEGIN;
+                    }else if (currentChar == '>') {
+                        if (input.charAt(i + 1) == '=') {
+                            tokens.add(new Token(Token.TokenType.NUMBER, tempString.toString()));
+                            tempString.setLength(0);
+                            tokens.add(new Token(Token.TokenType.GREATERTHANEQUAL, ">="));
+                            i++;
+                            state = States.BEGIN;
+                        }else {
+                            tokens.add(new Token(Token.TokenType.NUMBER, tempString.toString()));
+                            tempString.setLength(0);
+                            tokens.add(new Token(Token.TokenType.GREATERTHAN, ">"));
+                            state = States.BEGIN;
+                        }
+                    }else if (currentChar == ':') {
+                        if (input.charAt(i + 1) == '=') {
+                            tokens.add(new Token(Token.TokenType.NUMBER, tempString.toString()));
+                            tempString.setLength(0);
+                            tokens.add(new Token(Token.TokenType.ASSIGNMENT, ":="));
+                            i++;
+                            state = States.BEGIN;
+                        }
                     }else if (currentChar == ' ') {
-                        tokens.add(new Token(Token.TokenType.NUMBER, tempString.toString()));
-                        tempString.append(currentChar);
-                        tempString.setLength(0);
-                        state = States.BEGIN;
+                        state = States.SPACE;
+                    } else if(!Character.isDigit(currentChar)){
+
                     }else {
                         throw new Exception("Failed in number state");
                     }
@@ -149,7 +279,7 @@ public class Lexer {
                     }
                     break;
                 case COMMENTS:
-                    if(currentChar != '{'){
+                    if(currentChar != '}'){
                         isCommenting = true;
                         state = States.COMMENTS;
                     }
@@ -159,16 +289,78 @@ public class Lexer {
                         tempString.setLength(0);
                     }
                     break;
-                case PUNCTUATION:
-                    if(currentChar == ';') {
-                        tokens.add(new Token(Token.TokenType.SEMICOLON,tempString.toString()));
-                        state = States.BEGIN;
+                    case SPACE:
+                        if(currentChar == '+'){
+                            tokens.add(new Token(Token.TokenType.NUMBER, tempString.toString()));
+                            tempString.setLength(0);
+                            tokens.add(new Token(Token.TokenType.PLUS,"+"));
+                            tempString.setLength(0);
+                            state = States.BEGIN;
+                        }else if(currentChar == '-'){
+                            tokens.add(new Token(Token.TokenType.NUMBER, tempString.toString()));
+                            tempString.setLength(0);
+                            tokens.add(new Token(Token.TokenType.MINUS, "-"));
+                            tempString.setLength(0);
+                            state = States.BEGIN;
+                        }else if(currentChar == '*'){
+                            tokens.add(new Token(Token.TokenType.NUMBER, tempString.toString()));
+                            tempString.setLength(0);
+                            tokens.add(new Token(Token.TokenType.MULTIPLY, "*"));
+                            state = States.BEGIN;
+                        }else if(currentChar == '/'){
+                            tokens.add(new Token(Token.TokenType.NUMBER, tempString.toString()));
+                            tempString.setLength(0);
+                            tokens.add(new Token(Token.TokenType.DIVIDES, "/"));
+                            state = States.BEGIN;
+                        }else if(currentChar == '='){
+                            tokens.add(new Token(Token.TokenType.NUMBER, tempString.toString()));
+                            tempString.setLength(0);
+                            tokens.add(new Token(Token.TokenType.EQUALS, "="));
+                            state = States.BEGIN;
+                        }else if(currentChar == ')'){
+                            tokens.add(new Token(Token.TokenType.NUMBER, tempString.toString()));
+                            tempString.setLength(0);
+                            tokens.add(new Token(Token.TokenType.RIGHTPAREN,")"));
+                            tempString.setLength(0);
+                            state = States.BEGIN;
+                        }else if (currentChar == '>') {
+                            if (input.charAt(i + 1) == '=') {
+                                tokens.add(new Token(Token.TokenType.NUMBER, tempString.toString()));
+                                tempString.setLength(0);
+                                tokens.add(new Token(Token.TokenType.GREATERTHANEQUAL, ">="));
+                                i++;
+                                state = States.BEGIN;
+                            }else {
+                                tokens.add(new Token(Token.TokenType.NUMBER, tempString.toString()));
+                                tempString.setLength(0);
+                                tokens.add(new Token(Token.TokenType.GREATERTHAN, ">"));
+                                state = States.BEGIN;
+                            }
+                            }else if (currentChar == '<') {
+                            if (input.charAt(i + 1) == '=') {
+                                tokens.add(new Token(Token.TokenType.LESSTHANEQUAL, "<="));
+                                i++;
+                                state = States.BEGIN;
+                            }else if(input.charAt(i + 1) == '>'){
+                                tokens.add(new Token(Token.TokenType.NOTEQUAL, "<>"));
+                                i++;
+                                state = States.BEGIN;
+                            }else {
+                                tokens.add(new Token(Token.TokenType.GREATERTHAN, ">"));
+                                state = States.BEGIN;
+                            }
+                            }else if (currentChar == ':') {
+                            if (input.charAt(i + 1) == '=') {
+                                tokens.add(new Token(Token.TokenType.ASSIGNMENT, ":="));
+                                i++;
+                                state = States.BEGIN;
+                            }else {
+                                tokens.add(new Token(Token.TokenType.COLON, ":"));
+                            }
 
-                    }else if (currentChar == ':') {
-                        tokens.add(new Token(Token.TokenType.COLON, tempString.toString()));
-                    }else if(currentChar == '=') {
-                        tokens.add(new Token(Token.TokenType.EQUALS, "="));
-                    }
+                        }else if(currentChar == ' '){
+                            state = States.BEGIN;
+                        }
             }
 
         }
@@ -183,7 +375,6 @@ public class Lexer {
                 tokens.add(new Token(Token.TokenType.NUMBER, tempString.toString()));//add according "NUMBER" token
             }
         }
-
             //at the end of every input line, add an "EndOfLine" Token
             tokens.add(new Token(Token.TokenType.EndOfLine, ""));
         return tokens;
@@ -196,4 +387,5 @@ public class Lexer {
         return Token.TokenType.IDENTIFIER;
         }
     }
+
 }
