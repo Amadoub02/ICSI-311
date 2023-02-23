@@ -28,7 +28,7 @@ public class Shank {
             }
             Parser Parser = new Parser((ArrayList<Token>) tokenList);
             Node root = Parser.parse();
-            System.out.println(root.toString());
+            //System.out.println(root.toString());
 
 
         } catch (IOException e) {

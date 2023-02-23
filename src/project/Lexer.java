@@ -160,7 +160,7 @@ public class Lexer {
                             tokens.add(new Token(Token.TokenType.GREATERTHAN, ">"));
                         }
                     }else{
-                        throw new SyntaxErrorException();
+                        throw new SyntaxErrorException ("Invalid character in begin state: " + currentChar);
                     }
                     break;
                 case  IDENTIFIER:
@@ -239,7 +239,7 @@ public class Lexer {
                         state = States.BEGIN;
                         tokens.add(new Token(getTypeFromMap(tempString.toString()), tempString.toString()));
                     }else {
-                        throw new Exception("Failed in identifier state");
+                        throw new SyntaxErrorException ("Invalid character in identifier state: " + currentChar);
                     }
                     break;
                 case DECIMAL:
@@ -251,7 +251,7 @@ public class Lexer {
                          tempString.setLength(0);
                          state = States.SPACE;
                      }else {
-                        throw new Exception("Failed in decimal state");
+                         throw new SyntaxErrorException ("Invalid character in decimal state: " + currentChar);
                     }
                     break;
                 case NUMBER:
@@ -340,7 +340,7 @@ public class Lexer {
                     } else if(!Character.isDigit(currentChar)){
 
                     }else {
-                        throw new Exception("Failed in number state");
+                        throw new SyntaxErrorException ("Invalid character in number state: " + currentChar);
                     }
                     break;
                 case STRINGLITERAL:
@@ -448,7 +448,7 @@ public class Lexer {
                         }else if(currentChar == ' '){
                             state = States.BEGIN;
                         }else {
-                            throw new SyntaxErrorException();
+                            throw new SyntaxErrorException ("Invalid character in space state: " + currentChar);
                         }
             }
 

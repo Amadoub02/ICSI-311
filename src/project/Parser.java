@@ -27,20 +27,6 @@ public class Parser {
         }
     }
 
-    //make method that takes in INDENT,DEDENT, and ENDOFLINE tokens and removes them
-    public void removeIndentDedentEndOfLine() {
-        for (int i = 0; i < tokens.size(); i++) {
-            if (tokens.get(i).getTokenValue() == Token.TokenType.INDENT
-                    || tokens.get(i).getTokenValue() == Token.TokenType.DEDENT
-                    || tokens.get(i).getTokenValue() == Token.TokenType.EndOfLine) {
-                tokens.remove(i);
-                i--;
-            }
-        }
-    }
-
-
-
     private Node Term(){
         Node left = Factor();
         Node output = null;
