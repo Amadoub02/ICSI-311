@@ -26,6 +26,11 @@ public class Shank {
                 tokenList.addAll(tokens);
                 System.out.println(tokens);
             }
+            Parser Parser = new Parser((ArrayList<Token>) tokenList);
+            Node root = Parser.parse();
+            System.out.println(root.toString());
+
+
         } catch (IOException e) {
             System.out.println("An error occurred while trying to read the file: " + e.getMessage());
         } catch (Exception e) {

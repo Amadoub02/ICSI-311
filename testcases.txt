@@ -1,0 +1,46 @@
+{fibonacci}
+define start
+variables
+temp,first,second, x : integer
+begin
+    first := 0
+    second := 1
+    x := 13
+
+    while x > 0
+    begin
+        write first
+        temp := second
+        second := temp + second
+        x := x + 1
+    end
+end
+
+{ Iterative }
+define add (x,y:integer, var sum: integer)
+variables counter : integer
+    counter := y
+    sum := x
+    while counter > 0
+        counter := counter - 1
+        sum := sum + 1
+
+{ Recursive }
+define add (x,y : integer; var sum : integer)
+variables yMinusOne, xPlusOne, newSum : integer
+    { in here, x and y are constant }
+    if y = 0 then
+        sum := x
+    else
+        xPlusOne := x + 1
+        yMinusOne := y - 1
+        add xPlusOne, yMinusOne, var newSum
+        sum := newSum
+
+{ To call one of the adds: }
+define start ()
+variables a,b,c : integer
+    a := 5
+    b := 6
+    add a,b,var c
+    { in here, a & b are the original values, but c is whatever add sets sum to }
