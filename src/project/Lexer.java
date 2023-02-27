@@ -9,7 +9,7 @@ public class Lexer {
     private static int indentLevel = 0;
     //Enums used to label states accordingly
     enum States{
-        BEGIN,NUMBER,WORD,DECIMAL,IDENTIFIER,STRINGLITERAL,CHARACTERLITERAL,COMMENTS,SPACE,PUNCTUATION,OPERATION
+        BEGIN,NUMBER,DECIMAL,IDENTIFIER,STRINGLITERAL,CHARACTERLITERAL,COMMENTS,SPACE,
     }
     public HashMap<String, Token.TokenType> knownWords = new HashMap<>(); //Hashmap to hold keywords
     {

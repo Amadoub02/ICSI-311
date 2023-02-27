@@ -12,8 +12,9 @@ public class Parser {
     }
     //method that parses the tokens
     //creat a public parse method that returns a node
-    public Node parse() {
+    public Node parse() throws SyntaxErrorException {
         root = Expression();
+        expectEndsOfLine();
         return root;
     }
 
@@ -26,6 +27,18 @@ public class Parser {
             return null;
         }
     }
+    public void expectEndsOfLine() throws SyntaxErrorException {
+        // If there are no tokens, throw an exception
+        if (tokens.size() == 0) {
+            throw new SyntaxErrorException("Expected end of line.");
+        }
+
+        // Remove any EndOfLine tokens from the end of the list
+        while (tokens.size() > 0 && tokens.get(tokens.size() - 1).getTokenValue() == Token.TokenType.EndOfLine) {
+            tokens.remove(tokens.size() - 1);
+        }
+    }
+
 
     private Node Term(){
         Node left = Factor();
@@ -61,9 +74,8 @@ public class Parser {
                 return Expression();
             }
         } else {
-            /*put a way to test for a float number*/
             if (temp.getStringValue().contains("."))
-            {   //if it is a float
+            {
                 return new FloatNode(Float.parseFloat(temp.getStringValue()));
             }
             else
@@ -92,6 +104,4 @@ public class Parser {
         matchAndRemove(new Token(Token.TokenType.RIGHTPAREN, ")"));
         return left;
     }
-
-
 }

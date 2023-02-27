@@ -22,14 +22,16 @@ public class Shank {
             List<Token> tokenList = new ArrayList<>();
             var lexerTokens = new Lexer();
             for (String line : fileLines) {
+                //print list of tokens
                 List<Token>tokens = lexerTokens.lex(line);
                 tokenList.addAll(tokens);
                 System.out.println(tokens);
-            }
-            Parser Parser = new Parser((ArrayList<Token>) tokenList);
-            Node root = Parser.parse();
-            //System.out.println(root.toString());
 
+                //print out list of nodes from parser
+                Parser Parser = new Parser((ArrayList<Token>) tokenList);
+                Node root = Parser.parse();
+                System.out.println(root.toString());
+            }
 
         } catch (IOException e) {
             System.out.println("An error occurred while trying to read the file: " + e.getMessage());
