@@ -1,6 +1,7 @@
 package project;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Parser {
 
@@ -32,7 +33,6 @@ public class Parser {
         if (tokens.size() == 0) {
             throw new SyntaxErrorException("Expected end of line.");
         }
-
         // Remove any EndOfLine tokens from the end of the list
         while (tokens.size() > 0 && tokens.get(tokens.size() - 1).getTokenValue() == Token.TokenType.EndOfLine) {
             tokens.remove(tokens.size() - 1);
@@ -76,7 +76,7 @@ public class Parser {
         } else {
             if (temp.getStringValue().contains("."))
             {
-                return new FloatNode(Float.parseFloat(temp.getStringValue()));
+                return new RealNode(Float.parseFloat(temp.getStringValue()));
             }
             else
             {
@@ -104,4 +104,5 @@ public class Parser {
         matchAndRemove(new Token(Token.TokenType.RIGHTPAREN, ")"));
         return left;
     }
+
 }

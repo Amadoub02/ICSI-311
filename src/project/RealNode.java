@@ -1,7 +1,7 @@
 package project;
 
-public class FloatNode extends Node {
-    public FloatNode(float numberValue) {
+public class RealNode extends Node {
+    public RealNode(float numberValue) {
         this.numberValue = Float.parseFloat(String.valueOf(numberValue));
     }
     private float numberValue;
@@ -10,7 +10,7 @@ public class FloatNode extends Node {
     }
     @Override
     public String toString() {
-        return "FloatNode" + "(" + this.numberValue + ")";
+        return "RealNode" + "(" + this.numberValue + ")";
     }
 
 
