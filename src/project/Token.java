@@ -10,24 +10,24 @@ public class Token {
         LEFTPAREN,RIGHTPAREN,WRITE,GREATERTHAN,LESSTHAN,GREATERTHANEQUAL,LESSTHANEQUAL,
         PLUS, MINUS, DIVIDES,MULTIPLY,MODULUS,NOTEQUAL, ASSIGNMENT,
         LEFT,RIGHT,FROM,ARRAY,VAR,SUBSTRING,SQUAREROOT,INTEGERTOREAL,REALTOINTEGER,READONLY,ALSOREADONLY,UNTIL,
-        BOOLEAN,TRUE,FALSE,TO,CHARACTER,STRING,ELSE,ELSEIF,OF
+        BOOLEAN,TRUE,FALSE,TO,CHARACTER,STRING,ELSE,ELSEIF, DIVIDE, OF
     }
 
-    private TokenType tokenValue;
+    private TokenType tokenType;
     private String stringValue;
 
-    public Token(TokenType tokenValue, String stringValue) {
-        this.tokenValue = tokenValue;
+    public Token(TokenType tokenType, String stringValue) {
+        this.tokenType = tokenType;
         this.stringValue = stringValue;
     }
-    public TokenType getTokenValue() {
-        return tokenValue;
+    public TokenType getTokenType() {
+        return tokenType;
     }
     public String getStringValue() {
         return stringValue;
     }
     public String toString(){
-        return tokenValue + "(" + stringValue + ")" ;
+        return tokenType + "(" + stringValue + ")" ;
     }
 
 

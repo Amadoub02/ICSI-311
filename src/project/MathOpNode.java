@@ -4,22 +4,21 @@ public class MathOpNode extends Node {
 
     private void setMathOp (Token.TokenType mathParam) {
         switch (mathParam) {
-            case PLUS :
-                mathOp = mathOperator.PLUS;
+            case PLUS:
+                this.mathOp = mathOperator.PLUS;
                 break;
-            case MINUS :
-                mathOp = mathOperator.MINUS;
+            case MINUS:
+                this.mathOp = mathOperator.MINUS;
                 break;
             case MULTIPLY:
-                mathOp = mathOperator.MULTIPLY;
+                this.mathOp = mathOperator.MULTIPLY;
                 break;
-            case DIVIDES :
-                mathOp = mathOperator.DIVIDE;
+            case DIVIDE:
+                this.mathOp = mathOperator.DIVIDE;
                 break;
-                case MODULUS :
-                    mathOp = mathOperator.MODULUS;
-                    break;
-
+            case MODULUS:
+                this.mathOp = mathOperator.MODULUS;
+                break;
         }
     }
 
