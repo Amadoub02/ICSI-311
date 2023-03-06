@@ -15,9 +15,20 @@ public class Parser {
     }
     //method that parses the tokens
     //creat a public parse method that returns a node
-    public Node parse() throws SyntaxErrorException {
+    public Node parse() throws Exception {
         root = Expression();
         expectEndsOfLine();
+
+        List<FunctionNode> functionNodes = new ArrayList<>();
+        FunctionNode functionNode;
+
+        while ((functionNode = function()) != null) {
+            functionNodes.add(functionNode);
+        }
+
+        //return new ProgramNode();
+       //FunctionNode functionNode = function();
+
         return root;
     }
 
@@ -37,9 +48,32 @@ public class Parser {
         }
         return tokens.get(currentToken + n);
     }
-    private parameterDeclarations(){
-        String name = matchAndRemove(Token.TokenType.IDENTIFIER).getStringValue();
-        return VariableNode();
+    private List<VariableNode> parameterDeclarations() throws SyntaxErrorException{
+        List<VariableNode> parameters = new ArrayList<>();
+        List<String> varNames = new ArrayList<>();
+        VariableNode.varType type;
+        while(!tokens.isEmpty() && tokens.get(0).getTokenType() == Token.TokenType.IDENTIFIER) {
+            varNames.add(tokens.remove(0).getStringValue());
+            matchAndRemove(Token.TokenType.COMMA);
+        }
+        if(matchAndRemove(Token.TokenType.COLON)== null) throw new SyntaxErrorException("Missing colon");
+
+        Token.TokenType tokenType = tokens.remove(0).getTokenType();
+        if(tokenType == Token.TokenType.INTEGER){
+            type = VariableNode.varType.INTEGER;
+        } else if (tokenType == Token.TokenType.REAL){
+            type = VariableNode.varType.REAL;
+        } else {
+            throw new SyntaxErrorException("Invalid Input");
+        }
+
+        for(int i = 0; i < varNames.size(); i++) {
+            parameters.add(new VariableNode(type, varNames.get(i)));
+        }
+        //semicolon means there are more params so if there is one add the current params
+        if (matchAndRemove(Token.TokenType.SEMICOLON)!= null)
+            parameters.addAll(parameterDeclarations());
+        return parameters;
     }
 
     public void expectEndsOfLine() throws SyntaxErrorException {
@@ -117,33 +151,71 @@ public class Parser {
         matchAndRemove(Token.TokenType.RIGHTPAREN);
         return left;
     }
-   public FunctionNode function() throws Exception {
+    public FunctionNode function() throws Exception {
         String functionName = null;
-        List<VariableNode> functionParameters = new ArrayList<VariableNode>();
-        List<VariableNode> functionVariables = new ArrayList<VariableNode>();
-        List<VariableNode> functionConstants = new ArrayList<VariableNode>();
-        List<VariableNode> functionStatements = new ArrayList<VariableNode>();
+        List<VariableNode> functionParameters = new ArrayList<>();
+        List<VariableNode> functionVariables = new ArrayList<>();
+        List<VariableNode> functionConstants = new ArrayList<>();
+        List<StatementNode> functionStatements = new ArrayList<>();
 
 
-        if(matchAndRemove(Token.TokenType.DEFINE) != null){
-            if(matchAndRemove(Token.TokenType.IDENTIFIER) == null) throw new Exception("Missing function identifer");
-            if(matchAndRemove(Token.TokenType.LEFTPAREN) == null) throw new Exception("Missing left parenthesis");
-
-            functionParameters = parameterDeclarations();
-
-            if(matchAndRemove(Token.TokenType.RIGHTPAREN) == null) throw new Exception("Missing right parenthesis");
-
+        if (matchAndRemove(Token.TokenType.DEFINE) == null){
+            return null;
         }
 
-       if(tokens.get(0).getTokenType() == Token.TokenType.LEFTPAREN) {
-           matchAndRemove(Token.TokenType.LEFTPAREN);
-       }
-       if(tokens.get(0).getTokenType() == Token.TokenType.IDENTIFIER){
+        // Expect an identifier for the function name
+        Token functionNameToken = matchAndRemove(Token.TokenType.IDENTIFIER);
+        if (functionNameToken == null) {
+            throw new Exception("Missing identifier");
+        }
+        functionName = functionNameToken.getStringValue();
 
-       }
+        // Expect a left parenthesis
+        if (matchAndRemove(Token.TokenType.LEFTPAREN) == null) {
+            throw new Exception("Missing left parenthesis");
+        }
 
+        // Parse the list of function parameters
+        functionParameters = parameterDeclarations();
 
-        return null;
+        // Expect a right parenthesis
+       if (matchAndRemove(Token.TokenType.RIGHTPAREN) == null) {
+            throw new Exception("Missing right parenthesis");
+        }
+
+        // Expect an end of line token
+        expectEndsOfLine();
+
+        // Parse the constants and variables
+        while (!tokens.isEmpty() && (tokens.get(0).getTokenType() == Token.TokenType.CONSTANTS
+                || tokens.get(0).getTokenType() == Token.TokenType.VAR)) {
+            Token.TokenType varType = matchAndRemove(tokens.get(0).getTokenType()).getTokenType();
+            if (varType == Token.TokenType.CONSTANTS) {
+                functionConstants.addAll(parameterDeclarations());
+            } else {
+                functionVariables.addAll(parameterDeclarations());
+            }
+        }
+
+        // Expect an indent token
+        if (matchAndRemove(Token.TokenType.INDENT) == null) {
+            throw new Exception("Missing indent token");
+        }
+
+        // Parse the statements
+        while (!tokens.isEmpty() && tokens.get(0).getTokenType() != Token.TokenType.DEDENT) {
+            functionStatements.add((StatementNode) Expression());
+            expectEndsOfLine();
+        }
+
+        // Expect a dedent token
+        if (matchAndRemove(Token.TokenType.INDENT) == null) {
+            throw new Exception("Missing dedent token");
+        }
+
+        // Create and return a new FunctionNode
+        return new FunctionNode(functionName, functionParameters, functionVariables,
+                functionConstants, functionStatements);
     }
 
 

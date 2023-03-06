@@ -30,7 +30,9 @@ public class Shank {
                 //print out list of nodes from parser
                 Parser Parser = new Parser((ArrayList<Token>) tokenList);
                 Node root = Parser.parse();
+               // Node functionNode = Parser.function();
                 System.out.println(root.toString());
+                //System.out.println(functionNode.toString());
             }
 
         } catch (IOException e) {

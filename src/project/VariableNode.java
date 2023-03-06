@@ -2,12 +2,16 @@ package project;
 
 public class VariableNode extends Node{
 
-    public  VariableNode(String variableName, String variableType){
-        this.variableName = variableName;
+    public  VariableNode(varType variableName, String variableType){
+        this.variableName = String.valueOf(variableName);
         this.variableType = variableType;
     }
-    private String variableName;
-    private String variableType;
+    public enum varType {
+        INTEGER,
+        REAL
+    }
+    public String variableName;
+    public String variableType;
 
     public String toString() {
         return "VariableNode" + "(" + this.variableName + this.variableType +")";
