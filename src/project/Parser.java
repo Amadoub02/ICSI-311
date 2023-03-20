@@ -6,6 +6,8 @@ import java.util.List;
 public class Parser {
 
     private final ArrayList<Token> tokens;
+    ArrayList<StatementNode> statements = new ArrayList<>();
+    ArrayList<StatementNode> body = new ArrayList<>();
     private int currentToken = 0;
     private Node root = null;
     //constructor that accepts tokens
@@ -87,70 +89,29 @@ public class Parser {
         }
     }
 
-    private Node Term(){
-        Node left = Factor();
-        Node output = null;
-        while(left != null){
-            Token operator = matchAndRemove(Token.TokenType.MULTIPLY);
-            if(operator == null){
-                operator = matchAndRemove(Token.TokenType.DIVIDE);
-                if(operator == null) {
-                    operator = matchAndRemove(Token.TokenType.MODULUS);
-                    if (operator == null) {
-                        break;
-                    } else {
-                        output = new MathOpNode(operator.getTokenType(), left, Factor());
-                    }
-                }
-            }
-            else
-            {
-                output = new MathOpNode(operator.getTokenType(), left, Factor());
-            }
-            left = output;
-        }
-        return left;
-    }
-    private Node Factor(){
-        Token temp = matchAndRemove(Token.TokenType.NUMBER);
-        if (temp == null) {
-            temp = matchAndRemove(Token.TokenType.LEFTPAREN);
-            if (temp == null) {
-                return null;
+    public BooleanCompareNode booleanCompare() {
+        try {
+            expectEndsOfLine();
+            Node left = Expression();
+            Token.TokenType operatorType = peek(0).getTokenType();
+            if (operatorType == Token.TokenType.EQUALS || operatorType == Token.TokenType.NOTEQUAL ||
+                    operatorType == Token.TokenType.LESSTHAN || operatorType == Token.TokenType.GREATERTHAN ||
+                    operatorType == Token.TokenType.LESSTHANEQUAL || operatorType == Token.TokenType.GREATERTHANEQUAL) {
+
+                matchAndRemove(operatorType); // remove the operator token from the list of tokens
+
+                Node right = Expression();
+
+                return new BooleanCompareNode(left, right, operatorType);
             } else {
-                return Expression();
+                return new BooleanCompareNode(left, null, null);
             }
-        } else {
-            if (temp.getStringValue().contains("."))
-            {
-                return new RealNode(Float.parseFloat(temp.getStringValue()));
-            }
-            else
-            {
-                return new IntegerNode(Integer.parseInt(temp.getStringValue()));
-            }
+        } catch (Exception e) {
+            System.out.println("Not an expression");
+            throw new RuntimeException(e);
         }
     }
-    private Node Expression() {
-        Node left = Term();
-        Node output = null;
-        while (left != null) {
-            Token operator = matchAndRemove(Token.TokenType.PLUS);
-            if (operator == null) {
-                operator = matchAndRemove(Token.TokenType.MINUS);
-                if (operator == null) {
-                    break;
-                } else {
-                    output = new MathOpNode(operator.getTokenType(), left, Term());
-                }
-            } else {
-                output = new MathOpNode(operator.getTokenType(), left, Term());
-            }
-            left = output;
-        }
-        matchAndRemove(Token.TokenType.RIGHTPAREN);
-        return left;
-    }
+
     public FunctionNode function() throws Exception {
         String functionName = null;
         List<VariableNode> functionParameters = new ArrayList<>();
@@ -218,5 +179,111 @@ public class Parser {
                 functionConstants, functionStatements);
     }
 
+  public List<VariableNode> constants() throws SyntaxErrorException {
+
+        List<VariableNode> nodes = new ArrayList<>();
+        while(!tokens.isEmpty() && tokens.get(0).getTokenType() == Token.TokenType.IDENTIFIER){
+         nodes.add();
+         expectEndsOfLine();
+      }
+        return new
+  }
+    private AssignmentNode Assignment() throws SyntaxErrorException {
+        String variableName = "";
+
+        VariableReferenceNode VariableName = new VariableReferenceNode(variableName);
+        AssignmentNode assignment = new AssignmentNode();
+        Node expression1 = new MathOpNode();
+        while(tokens.get(0).getTokenType()==Token.TokenType.IDENTIFIER) {
+            VariableName = getVariableReference();
+        }
+        if(tokens.get(0).getTokenType()==Token.TokenType.ASSIGNMENT || tokens.get(0).getTokenType()==Token.TokenType.EQUALS) {
+            matchAndRemove(Token.TokenType.ASSIGNMENT);
+        }
+        while(tokens.get(0).getTokenType()==Token.TokenType.NUMBER || tokens.get(0).getTokenType()==Token.TokenType.IDENTIFIER
+                || tokens.get(0).getTokenType()==Token.TokenType.STRINGLITERAL || tokens.get(0).getTokenType()==Token.TokenType.CHARACTERLITERAL) {
+            expression1 = Expression();
+        }
+
+        expectEndsOfLine();
+        assignment = new AssignmentNode(VariableName,expression1);
+        return assignment;
+    }
+    private VariableReferenceNode getVariableReference() throws SyntaxErrorException {
+        VariableReferenceNode variableRef = new VariableReferenceNode();
+        while(tokens.get(0).getTokenType() == Token.TokenType.IDENTIFIER) {
+            variableRef = new VariableReferenceNode(tokens.remove(0).getStringValue());
+        }
+        while(tokens.get(0).getTokenType()==Token.TokenType.NUMBER) {
+            variableRef = new VariableReferenceNode(tokens.remove(0).getStringValue());
+        }
+        expectEndsOfLine();
+        return variableRef;
+    }
+
+    private Node Term(){
+        Node left = Factor();
+        Node output = null;
+        while(left != null){
+            Token operator = matchAndRemove(Token.TokenType.MULTIPLY);
+            if(operator == null){
+                operator = matchAndRemove(Token.TokenType.DIVIDE);
+                if(operator == null) {
+                    operator = matchAndRemove(Token.TokenType.MODULUS);
+                    if (operator == null) {
+                        break;
+                    } else {
+                        output = new MathOpNode(operator.getTokenType(), left, Factor());
+                    }
+                }
+            }
+            else
+            {
+                output = new MathOpNode(operator.getTokenType(), left, Factor());
+            }
+            left = output;
+        }
+        return left;
+    }
+    private Node Factor(){
+        Token temp = matchAndRemove(Token.TokenType.NUMBER);
+        if (temp == null) {
+            temp = matchAndRemove(Token.TokenType.LEFTPAREN);
+            if (temp == null) {
+                return null;
+            } else {
+                return Expression();
+            }
+        } else {
+            if (temp.getStringValue().contains("."))
+            {
+                return new RealNode(Float.parseFloat(temp.getStringValue()));
+            }
+            else
+            {
+                return new IntegerNode(Integer.parseInt(temp.getStringValue()));
+            }
+        }
+    }
+    private Node Expression() {
+        Node left = Term();
+        Node output = null;
+        while (left != null) {
+            Token operator = matchAndRemove(Token.TokenType.PLUS);
+            if (operator == null) {
+                operator = matchAndRemove(Token.TokenType.MINUS);
+                if (operator == null) {
+                    break;
+                } else {
+                    output = new MathOpNode(operator.getTokenType(), left, Term());
+                }
+            } else {
+                output = new MathOpNode(operator.getTokenType(), left, Term());
+            }
+            left = output;
+        }
+        matchAndRemove(Token.TokenType.RIGHTPAREN);
+        return left;
+    }
 
 }
