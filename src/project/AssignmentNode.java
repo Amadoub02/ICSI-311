@@ -1,16 +1,16 @@
 package project;
 
 public class AssignmentNode {
-    private VariableReferenceNode target;
+    private String target;
     private Node expression;
 
     // target = expression
-    public AssignmentNode(VariableReferenceNode statement, Node expression) {
+    public AssignmentNode(String statement, Node expression) {
         this.target = statement;
         this.expression = expression;
     }
 
-    public VariableReferenceNode getTarget() {
+    public String getTarget() {
         return target;
     }
 

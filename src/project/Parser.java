@@ -21,13 +21,6 @@ public class Parser {
         root = Expression();
         expectEndsOfLine();
 
-        List<FunctionNode> functionNodes = new ArrayList<>();
-        FunctionNode functionNode;
-
-        while ((functionNode = function()) != null) {
-            functionNodes.add(functionNode);
-        }
-
         //return new ProgramNode();
        //FunctionNode functionNode = function();
 
@@ -183,34 +176,23 @@ public class Parser {
 
         List<VariableNode> nodes = new ArrayList<>();
         while(!tokens.isEmpty() && tokens.get(0).getTokenType() == Token.TokenType.IDENTIFIER){
-         nodes.add();
+         //nodes.add(getconstant());
          expectEndsOfLine();
       }
-        return new
+        return nodes;
   }
     private AssignmentNode Assignment() throws SyntaxErrorException {
-        String variableName = "";
-
-        VariableReferenceNode VariableName = new VariableReferenceNode(variableName);
-        AssignmentNode assignment = new AssignmentNode();
-        Node expression1 = new MathOpNode();
-        while(tokens.get(0).getTokenType()==Token.TokenType.IDENTIFIER) {
-            VariableName = getVariableReference();
-        }
-        if(tokens.get(0).getTokenType()==Token.TokenType.ASSIGNMENT || tokens.get(0).getTokenType()==Token.TokenType.EQUALS) {
-            matchAndRemove(Token.TokenType.ASSIGNMENT);
-        }
-        while(tokens.get(0).getTokenType()==Token.TokenType.NUMBER || tokens.get(0).getTokenType()==Token.TokenType.IDENTIFIER
-                || tokens.get(0).getTokenType()==Token.TokenType.STRINGLITERAL || tokens.get(0).getTokenType()==Token.TokenType.CHARACTERLITERAL) {
-            expression1 = Expression();
-        }
-
-        expectEndsOfLine();
-        assignment = new AssignmentNode(VariableName,expression1);
-        return assignment;
+    if(peek(1).getTokenType() == Token.TokenType.ASSIGNMENT && peek(0).getTokenType() == Token.TokenType.IDENTIFIER){
+        String variableName = tokens.remove(0).getStringValue();
+        matchAndRemove(Token.TokenType.ASSIGNMENT);
+        Node expression = Expression();
+        return new AssignmentNode(variableName, expression);
+    }
+        return null;
     }
     private VariableReferenceNode getVariableReference() throws SyntaxErrorException {
-        VariableReferenceNode variableRef = new VariableReferenceNode();
+        String variableName = "";
+        VariableReferenceNode variableRef = new VariableReferenceNode(variableName);
         while(tokens.get(0).getTokenType() == Token.TokenType.IDENTIFIER) {
             variableRef = new VariableReferenceNode(tokens.remove(0).getStringValue());
         }
@@ -219,6 +201,45 @@ public class Parser {
         }
         expectEndsOfLine();
         return variableRef;
+    }
+
+    public ArrayList<StatementNode> statements() throws SyntaxErrorException {
+        ArrayList<StatementNode> statements = new ArrayList<>();
+        expectEndsOfLine();
+        matchAndRemove(Token.TokenType.INDENT);
+        expectEndsOfLine();
+        while(peek(0).getTokenType() != Token.TokenType.DEDENT) {
+            statements.add(statement());
+            expectEndsOfLine();
+        }
+        matchAndRemove(Token.TokenType.DEDENT);
+        if(!tokens.isEmpty())
+            expectEndsOfLine();
+        return statements;
+
+    }
+    public ArrayList<FunctionNode> functionDefentions() throws SyntaxErrorException {
+        ArrayList<FunctionNode> functions = new ArrayList<>();
+        while(peek(0).getTokenType() == Token.TokenType.DEFINE) {
+            Token name = matchAndRemove(Token.TokenType.IDENTIFIER);
+            String functionName = "";
+            if(name != null) {
+                functionName = name.getStringValue();
+            }
+            matchAndRemove(Token.TokenType.LEFTPAREN);
+            ArrayList<VariableNode> parameters = (ArrayList<VariableNode>) parameterDeclarations();
+            matchAndRemove(Token.TokenType.RIGHTPAREN);
+            expectEndsOfLine();
+
+        }
+        return functions;
+    }
+    public StatementNode statement() throws SyntaxErrorException {
+        AssignmentNode assignment = Assignment();
+        if(assignment != null) {
+           // return new StatementNode(assignment);
+        }
+        return null;
     }
 
     private Node Term(){
