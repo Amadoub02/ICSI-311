@@ -49,6 +49,8 @@ public class Lexer {
         knownWords.put("else", Token.TokenType.ELSE);
         knownWords.put("elseif", Token.TokenType.ELSEIF);
         knownWords.put("of", Token.TokenType.OF);
+        knownWords.put("do", Token.TokenType.DO);
+        knownWords.put("read", Token.TokenType.READ);
 
     }
     private static final int INDENTATION_SIZE = 4;

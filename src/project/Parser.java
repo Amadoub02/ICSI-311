@@ -237,9 +237,116 @@ public class Parser {
     public StatementNode statement() throws SyntaxErrorException {
         AssignmentNode assignment = Assignment();
         if(assignment != null) {
-           // return new StatementNode(assignment);
+           return assignment;
+        }
+        WhileNode whileNode = parseWhile();
+        if(whileNode != null) {
+            return whileNode;
+        }
+        ForNode forNode = parseFor();
+        if(forNode != null) {
+            return forNode;
+        }
+        IfNode ifNode = parseIf();
+        if(ifNode != null) {
+            return ifNode;
+        }
+        StatementNode FunctionCallNode = parseFunctionCall();
+        if(FunctionCallNode != null) {
+            return FunctionCallNode;
+        }
+        return parseIf();
+    }
+    public ForNode parseFor() throws SyntaxErrorException {
+        if(matchAndRemove(Token.TokenType.FOR)!=null){
+            String name = matchAndRemove(Token.TokenType.IDENTIFIER).getStringValue();
+            matchAndRemove(Token.TokenType.FROM);
+            Node start = Expression();
+            matchAndRemove(Token.TokenType.TO);
+            Node end = Expression();
+            matchAndRemove(Token.TokenType.DO);
+            ArrayList<StatementNode> statements = statements();
+            return new ForNode(new VariableReferenceNode(name), start, end, statements);
         }
         return null;
+    }
+    public WhileNode parseWhile() throws SyntaxErrorException {
+        if(matchAndRemove(Token.TokenType.WHILE)!=null){
+            expectEndsOfLine();
+            BooleanCompareNode condition = booleanCompare();
+            expectEndsOfLine();
+            matchAndRemove(Token.TokenType.BEGIN);
+            ArrayList<StatementNode> statements = statements();
+            return new WhileNode(condition, statements);
+        }
+        return null;
+    }
+    public  RepeatNode repeat() throws SyntaxErrorException {
+        if(matchAndRemove(Token.TokenType.REPEAT)!=null){
+            expectEndsOfLine();
+            matchAndRemove(Token.TokenType.BEGIN);
+            ArrayList<StatementNode> statements = statements();
+            matchAndRemove(Token.TokenType.UNTIL);
+            BooleanCompareNode condition = booleanCompare();
+            return new RepeatNode(condition, statements);
+        }
+        return null;
+    }
+    public IfNode parseIf() throws SyntaxErrorException {
+        if( matchAndRemove(Token.TokenType.IF)!=null){
+            expectEndsOfLine();
+            BooleanCompareNode condition = booleanCompare();
+            expectEndsOfLine();
+            matchAndRemove(Token.TokenType.THEN);
+            ArrayList<StatementNode> statements = statements();
+
+            //first if node with first condition and statement
+            IfNode ifNode = new IfNode(condition, statements);
+            expectEndsOfLine();
+
+            while (matchAndRemove(Token.TokenType.ELSEIF)!=null){
+                expectEndsOfLine();
+                condition = booleanCompare();
+                expectEndsOfLine();
+                matchAndRemove(Token.TokenType.THEN);
+                statements = statements();
+                ifNode.setElseStatements(statements);
+                expectEndsOfLine();
+            }
+            if(matchAndRemove(Token.TokenType.ELSE)!=null){
+                expectEndsOfLine();
+                statements = statements();
+                ifNode.setElseStatements(statements);
+            }
+            return ifNode;
+        }
+        return null;
+    }
+    public FunctionCallNode parseFunctionCall(){
+        String name = "";
+        ArrayList<ParameterNode> parameters = new ArrayList<>();
+        Boolean isPrint = false;
+        FunctionCallNode functionCall = new FunctionCallNode(name,parameters,isPrint);
+        if(peek(0).getTokenType() == Token.TokenType.IDENTIFIER){
+           name = String.valueOf(matchAndRemove(Token.TokenType.IDENTIFIER));
+        }
+        if(peek(0).getTokenType() == Token.TokenType.READ){
+            name = String.valueOf(matchAndRemove(Token.TokenType.READ));
+        }
+        if(peek(0).getTokenType() == Token.TokenType.WRITE){
+            name = String.valueOf(matchAndRemove(Token.TokenType.WRITE));
+        }
+        if(peek(0).getTokenType() == Token.TokenType.SQUAREROOT){
+            name = String.valueOf(matchAndRemove(Token.TokenType.SQUAREROOT));
+        }
+        if(peek(0).getTokenType() == Token.TokenType.REALTOINTEGER){
+            name = String.valueOf(matchAndRemove(Token.TokenType.REALTOINTEGER));
+        }
+        if(peek(0).getTokenType() == Token.TokenType.INTEGERTOREAL){
+            name = String.valueOf(matchAndRemove(Token.TokenType.INTEGERTOREAL));
+        }
+        return functionCall;
+
     }
 
     private Node Term(){

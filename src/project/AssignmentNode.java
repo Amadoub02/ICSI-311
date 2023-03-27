@@ -1,6 +1,6 @@
 package project;
 
-public class AssignmentNode {
+public class AssignmentNode extends StatementNode {
     private String target;
     private Node expression;
 

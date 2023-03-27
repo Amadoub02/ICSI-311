@@ -2,7 +2,7 @@ package project;
 
 import java.lang.reflect.Type;
 
-public class BooleanCompareNode {
+public class BooleanCompareNode extends Node {
 
     private Node left;
     private Node right;
