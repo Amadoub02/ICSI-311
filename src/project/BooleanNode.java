@@ -10,4 +10,8 @@ public class BooleanNode extends Node{
     public String toString() {
         return "BooleanNode" + "(" + this.bool +")";
     }
+
+    public boolean getValue() {
+        return bool;
+    }
 }

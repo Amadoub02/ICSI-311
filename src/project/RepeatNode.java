@@ -2,7 +2,7 @@ package project;
 
 import java.util.ArrayList;
 
-public class RepeatNode {
+public class RepeatNode extends StatementNode{
     private Node booleanExpression;
     private ArrayList<StatementNode> statements;
 

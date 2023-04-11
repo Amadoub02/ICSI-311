@@ -4,7 +4,6 @@ public class AssignmentNode extends StatementNode {
     private String target;
     private Node expression;
 
-    // target = expression
     public AssignmentNode(String statement, Node expression) {
         this.target = statement;
         this.expression = expression;

@@ -1,6 +1,6 @@
 package project;
 
-public class RealDataType {
+public class RealDataType extends InterpreterDataType {
     private Float value;
 
     public RealDataType(String value){

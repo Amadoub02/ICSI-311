@@ -1,6 +1,6 @@
 package project;
 
-public class IntegerDataType {
+public class IntegerDataType extends InterpreterDataType {
     private int value;
 
     public IntegerDataType(String value){

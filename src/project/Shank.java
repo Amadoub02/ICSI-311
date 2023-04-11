@@ -33,6 +33,10 @@ public class Shank {
                // Node functionNode = Parser.function();
                 System.out.println(root.toString());
                 //System.out.println(functionNode.toString());
+                Interpreter Solve = new Interpreter();
+                //System.out.println(AST.toString());
+
+                System.out.println("The result of this expression is: " + Solve.Resolve(Parser.parse()));
             }
 
         } catch (IOException e) {
